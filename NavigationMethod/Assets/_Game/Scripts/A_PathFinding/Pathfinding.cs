@@ -5,17 +5,25 @@ using System.Collections.Generic;
 public class Pathfinding : MonoBehaviour
 {
     [SerializeField] private Grid grid;
+    [SerializeField] private float distTolerance;
+    [SerializeField] private float newRotaWaitTime;
+
+    private Coroutine _newRotaCoroutine;
+    private WaitForSeconds _newRotaCalculateWaitTime;
+    private Vector3 _targetPos;
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public void FindPath(Vector3 targetPos)
     {
-        grid.GridInitialize(Vector3.zero, targetPos - transform.position);
+        _targetPos = targetPos;
 
-        Debug.Log("FindPath:::" + targetPos);
+        grid.GridInitialize(Vector3.zero, _targetPos - transform.position);
+
+        Debug.Log("FindPath:::" + _targetPos);
 
         Node startNode = grid.NodeFromWorldPoint(Vector3.zero);
-        Node targetNode = grid.NodeFromWorldPoint(targetPos - transform.position);
+        Node targetNode = grid.NodeFromWorldPoint(_targetPos - transform.position);
 
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
@@ -69,6 +77,43 @@ public class Pathfinding : MonoBehaviour
                 }
             }
         }
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    public void SeekerDetecetNavObs()
+    {
+        float dist = Vector3.Distance(_targetPos, transform.position);
+
+        if (dist <= distTolerance)
+        {
+            Debug.Log("DUR YOLCU 07");
+
+            // return;
+        }
+
+        Debug.Log("Yeni rota hesaplanıyor");
+
+        if (_newRotaCoroutine != null)
+        {
+            StopCoroutine(_newRotaCoroutine);
+        }
+
+        _newRotaCoroutine = StartCoroutine(NewRotaGeneratorIEnumerator());
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private IEnumerator NewRotaGeneratorIEnumerator()
+    {
+        if (_newRotaCalculateWaitTime == null)
+        {
+            _newRotaCalculateWaitTime = new WaitForSeconds(newRotaWaitTime);
+        }
+
+        yield return _newRotaCalculateWaitTime;
+
+        FindPath(_targetPos);
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]

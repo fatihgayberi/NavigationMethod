@@ -36,8 +36,6 @@ public class LayerManager : Singleton<LayerManager>
 
         int layerNum = Wonnasmith.LayerMaskExtensionMethods.LayerMask2Int(layerDatas.layerMask);
 
-        Debug.Log("objectLayer.Equals(layerNum);:::" + objectLayer + "~~" + layerNum + ":::" + (objectLayer == layerNum));
-
         return objectLayer.Equals(layerNum);
     }
 

@@ -23,8 +23,6 @@ public class Grid : MonoBehaviour
         dist.x = Mathf.Abs(startPos.x - targetPos.x) * 2;
         dist.y = Mathf.Abs(startPos.z - targetPos.z) * 2;
 
-        Debug.Log("GridInitialize::::::" + dist);
-
         if (gridWorldSize.x < dist.x)
         {
             gridWorldSize.x = dist.x;
@@ -45,8 +43,6 @@ public class Grid : MonoBehaviour
 
     public void GridInitialize()
     {
-        Debug.Log("GridInitialize::::::");
-
         nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);

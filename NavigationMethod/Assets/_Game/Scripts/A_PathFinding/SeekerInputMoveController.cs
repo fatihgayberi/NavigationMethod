@@ -46,8 +46,6 @@ public class SeekerInputMoveController : MonoBehaviour
             {
                 if (raycastHit.transform != null)
                 {
-                    Debug.Log("gameObject::" + gameObject.name, gameObject);
-
                     Pathfinding clickPathfinding = raycastHit.transform.gameObject.GetComponent<Pathfinding>();
 
                     if (_selectPathfinding == null)
@@ -63,8 +61,6 @@ public class SeekerInputMoveController : MonoBehaviour
                     {
                         if (LayerManager.Instance.IsLayerEquals(raycastHit.transform.gameObject.layer, LayerManager.LayerType.LayerTerrain_LAYER))
                         {
-                            Debug.Log("targetPos::" + targetPos);
-
                             targetPos = raycastHit.point;
 
                             SeekerCharacterMovePathGenerator?.Invoke(_selectPathfinding, targetPos);
