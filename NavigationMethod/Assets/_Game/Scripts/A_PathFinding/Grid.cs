@@ -143,7 +143,65 @@ public class Grid : MonoBehaviour
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
+    private bool IsWalkableControl_TEST_FOR_GIZMOS(Vector3 worldPoint)
+    {
+        Collider[] hitcollider = Physics.OverlapSphere(worldPoint, nodeRadius);
+
+        if (hitcollider == null)
+        {
+            return true;
+        }
+
+        if (hitcollider.Length == 0)
+        {
+            return true;
+        }
+
+        if (hitcollider[0] == null)
+        {
+            return true;
+        }
+
+        if (hitcollider[0].gameObject == null)
+        {
+            return true;
+        }
+
+        int hitcolliderLength = hitcollider.Length;
+
+        for (int i = 0; i < hitcolliderLength; i++)
+        {
+            NavObs navObs = hitcollider[i].gameObject.GetComponent<NavObs>();
+
+            if (navObs != null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     public List<Node> pathTEST;
+    // void OnDrawGizmos()
+    // {
+    //     Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+
+    //     if (grid != null)
+    //     {
+    //         foreach (Node n in grid)
+    //         {
+    //             Gizmos.color = IsWalkableControl_TEST_FOR_GIZMOS(n.worldPosition) ? Color.white : Color.red;
+    //             if (pathTEST != null)
+    //                 if (pathTEST.Contains(n))
+    //                     Gizmos.color = Color.black;
+    //             Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
+    //         }
+    //     }
+    // }
+
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));

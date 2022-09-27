@@ -97,14 +97,19 @@ public class Pathfinding : MonoBehaviour
             return true;
         }
 
-        NavObs navObs = hitcollider[0].gameObject.GetComponent<NavObs>();
+        int hitcolliderLength = hitcollider.Length;
 
-        if (navObs == null)
+        for (int i = 0; i < hitcolliderLength; i++)
         {
-            return true;
+            NavObs navObs = hitcollider[i].gameObject.GetComponent<NavObs>();
+
+            if (navObs != null)
+            {
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 
 
