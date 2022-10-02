@@ -4,8 +4,16 @@ using System.Collections.Generic;
 
 public class Grid : MonoBehaviour
 {
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    #region "Grid for Vaue"
+    /*****************************************************/
+    [Header("===============Grid for Vaue===============")]
+    /*****************************************************/
+    [SerializeField] private Terrain terrain;
     [SerializeField] private Vector2 worldSizeExpandStep;
     [SerializeField] private Vector2 worldSizeExpandStepMax;
+    #endregion
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
     public Vector2 gridWorldSize;
     public float nodeRadius;
@@ -13,6 +21,30 @@ public class Grid : MonoBehaviour
 
     float nodeDiameter;
     int gridSizeX, gridSizeY;
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private void OnEnable()
+    {
+        Wonnasmith.GOD_MODE_MANAGER.GizmosClearButtonClick += OnGizmosClearButtonClick;
+    }
+
+    private void OnDisable()
+    {
+        Wonnasmith.GOD_MODE_MANAGER.GizmosClearButtonClick -= OnGizmosClearButtonClick;
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private void OnGizmosClearButtonClick()
+    {
+        if (pathTEST == null)
+        {
+            return;
+        }
+
+        pathTEST.Clear();
+    }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -61,6 +93,8 @@ public class Grid : MonoBehaviour
             for (int y = 0; y < gridSizeY; y++)
             {
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
+                worldPoint.y = GetTerrainPositionY(worldPoint);
+
                 grid[x, y] = new Node(worldPoint, x, y);
             }
         }
@@ -90,6 +124,21 @@ public class Grid : MonoBehaviour
         }
 
         return neighbours;
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private float GetTerrainPositionY(Vector3 worldPoint)
+    {
+        if (terrain == null)
+        {
+            return worldPoint.y;
+        }
+
+        float terrainWorldY = terrain.transform.position.y;
+        float terrainSampleLocal = terrain.SampleHeight(worldPoint);
+        float terrainSampleWorld = terrainWorldY + terrainSampleLocal;
+        return terrainSampleWorld;
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
@@ -181,42 +230,52 @@ public class Grid : MonoBehaviour
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public List<Node> pathTEST;
-    // void OnDrawGizmos()
-    // {
-    //     Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-
-    //     if (grid != null)
-    //     {
-    //         foreach (Node n in grid)
-    //         {
-    //             Gizmos.color = IsWalkableControl_TEST_FOR_GIZMOS(n.worldPosition) ? Color.white : Color.red;
-    //             if (pathTEST != null)
-    //                 if (pathTEST.Contains(n))
-    //                     Gizmos.color = Color.black;
-    //             Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
-    //         }
-    //     }
-    // }
-
     void OnDrawGizmos()
     {
-        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-
         if (pathTEST == null)
         {
             return;
         }
 
+        if (pathTEST.Count == 0)
+        {
+            return;
+        }
+
+        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+
         if (grid != null)
         {
             foreach (Node n in grid)
             {
-                if (pathTEST.Contains(n))
-                {
-                    Gizmos.color = Color.black;
-                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
-                }
+                Gizmos.color = IsWalkableControl_TEST_FOR_GIZMOS(n.worldPosition) ? Color.white : Color.red;
+                if (pathTEST != null)
+                    if (pathTEST.Contains(n))
+                        Gizmos.color = Color.black;
+                Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
         }
     }
+
+    // void OnDrawGizmos()
+    // {
+    //     Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+
+    //     if (pathTEST == null)
+    //     {
+    //         return;
+    //     }
+
+    //     if (grid != null)
+    //     {
+    //         foreach (Node n in grid)
+    //         {
+    //             if (pathTEST.Contains(n))
+    //             {
+    //                 Gizmos.color = Color.black;
+    //                 Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
+    //             }
+    //         }
+    //     }
+    // }
 }

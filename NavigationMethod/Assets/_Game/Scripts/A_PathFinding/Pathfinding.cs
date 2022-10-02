@@ -1,12 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class Pathfinding : MonoBehaviour
 {
+    public bool isTEST;
+
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    #region "PathFind for Value"
+    /***********************************************************/
+    [Header("===============PathFind for Value===============")]
+    /***********************************************************/
+    [Space(10)]
     [SerializeField] private Grid grid;
     [SerializeField] private float distTolerance;
     [SerializeField] private float newRotaWaitTime;
+    [SerializeField] private float maxSeekerSlope;
+    #endregion
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
     private Coroutine _newRotaCoroutine;
     private WaitForSeconds _newRotaCalculateWaitTime;
@@ -19,8 +31,6 @@ public class Pathfinding : MonoBehaviour
         _targetPos = targetPos;
 
         grid.GridInitialize(Vector3.zero, _targetPos - transform.position);
-
-        Debug.Log("FindPath:::" + _targetPos);
 
         Node startNode = grid.NodeFromWorldPoint(Vector3.zero);
         Node targetNode = grid.NodeFromWorldPoint(_targetPos - transform.position);
@@ -60,7 +70,7 @@ public class Pathfinding : MonoBehaviour
 
             foreach (Node neighbour in grid.GetNeighbours(node))
             {
-                if (!IsWalkableControl(neighbour.worldPosition) || closedSet.Contains(neighbour))
+                if (!IsWalkableControl(neighbour.worldPosition) || closedSet.Contains(neighbour) || !IsVerySlopeControl(neighbour, node))
                 {
                     continue;
                 }
@@ -132,16 +142,6 @@ public class Pathfinding : MonoBehaviour
             return true;
         }
 
-        if (hitcollider[0] == null)
-        {
-            return true;
-        }
-
-        if (hitcollider[0].gameObject == null)
-        {
-            return true;
-        }
-
         int hitcolliderLength = hitcollider.Length;
 
         for (int i = 0; i < hitcolliderLength; i++)
@@ -157,6 +157,54 @@ public class Pathfinding : MonoBehaviour
         return true;
     }
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private bool IsVerySlopeControl(Node neighbour, Node node)
+    {
+        if (isTEST)
+        {
+            return true;
+        }
+
+        float slope = SlopeCalculator(neighbour, node);
+
+        if (slope <= maxSeekerSlope)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private float SlopeCalculator(Node neighbour, Node node)
+    {
+        if (neighbour == null)
+        {
+            return 0;
+        }
+
+        if (node == null)
+        {
+            return 0;
+        }
+
+        Vector3 neighbourPos = neighbour.worldPosition;
+        Vector3 nodePos = node.worldPosition;
+
+        float delta_Y = Mathf.Abs(neighbourPos.y - nodePos.y);
+        float dist = Vector3.Distance(neighbourPos, nodePos);
+
+        float slope = delta_Y / dist;
+
+        Debug.Log("delta_Y:::" + delta_Y);
+        Debug.Log("dist:::" + dist);
+        Debug.Log("slope:::" + (delta_Y / dist));
+        Debug.Log("slope_Yuzde:::" + Wonnasmith.FloatExtensionMethods.FloatRemap(slope, 0, 1, 0, 100));
+
+        return Wonnasmith.FloatExtensionMethods.FloatRemap(slope, 0, 1, 0, 100);
+    }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -174,7 +222,6 @@ public class Pathfinding : MonoBehaviour
         path.Reverse();
 
         grid.pathTEST = path;
-
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]

@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Wonnasmith;
 
-public class SeekerManager : MonoBehaviour
+public class SeekerManager : Singleton<SeekerManager>
 {
     public delegate void SeekerManagerSeekerCharacterMovePathGenerator(Pathfinding pathfinding, Vector3 targetPos);
 
@@ -29,6 +30,16 @@ public class SeekerManager : MonoBehaviour
         }
 
         pathfinding.FindPath(targetPos);
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    /// <summary>
+    /// Test için kullanılır
+    /// </summary>
+    public void GizmosClear()
+    {
+
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
