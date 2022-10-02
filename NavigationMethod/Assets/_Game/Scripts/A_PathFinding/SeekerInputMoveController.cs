@@ -6,7 +6,7 @@ public class SeekerInputMoveController : MonoBehaviour
 {
     public static event SeekerManager.SeekerManagerSeekerCharacterMovePathGenerator SeekerCharacterMovePathGenerator;
 
-    public Pathfinding _selectPathfinding;
+    public List<Pathfinding> _selectPathfindingList;
     public Vector3 targetPos;
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
@@ -28,7 +28,10 @@ public class SeekerInputMoveController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            _selectPathfinding = null;
+            if (_selectPathfindingList != null)
+            {
+                _selectPathfindingList.Clear();
+            }
         }
     }
 
@@ -46,24 +49,29 @@ public class SeekerInputMoveController : MonoBehaviour
             {
                 if (raycastHit.transform != null)
                 {
+                    if (_selectPathfindingList == null)
+                    {
+                        _selectPathfindingList = new List<Pathfinding>();
+                    }
+
                     Pathfinding clickPathfinding = raycastHit.transform.gameObject.GetComponent<Pathfinding>();
 
-                    if (_selectPathfinding == null)
+                    if (_selectPathfindingList.Contains(clickPathfinding))
                     {
-                        _selectPathfinding = clickPathfinding;
+                        return;
                     }
-                    else if (clickPathfinding != null && _selectPathfinding != clickPathfinding)
+                    else if (clickPathfinding != null)
                     {
-                        _selectPathfinding = clickPathfinding;
+                        _selectPathfindingList.Add(clickPathfinding);
                     }
 
-                    if (clickPathfinding == null)
+                    if (_selectPathfindingList.Count != 0)
                     {
                         if (LayerManager.Instance.IsLayerEquals(raycastHit.transform.gameObject.layer, LayerManager.LayerType.LayerTerrain_LAYER))
                         {
                             targetPos = raycastHit.point;
 
-                            SeekerCharacterMovePathGenerator?.Invoke(_selectPathfinding, targetPos);
+                            SeekerCharacterMovePathGenerator?.Invoke(_selectPathfindingList, targetPos);
                         }
                     }
                 }

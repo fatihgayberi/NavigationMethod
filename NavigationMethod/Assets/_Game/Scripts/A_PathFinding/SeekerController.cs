@@ -4,7 +4,72 @@ using UnityEngine;
 
 public class SeekerController : MonoBehaviour
 {
-    [SerializeField] private Pathfinding pathfinding;
+    [SerializeField] private SeekerManager.SeekerType seekerType;
+
+    private Pathfinding _pathfinding;
+    private SeekerGrid grid;
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private void Start()
+    {
+        GridInitialze();
+        PathfindingInitialze();
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private void GridInitialze()
+    {
+        grid = gameObject.AddComponent<SeekerGrid>();
+
+        grid.SetSeekerType(seekerType);
+        grid.SetTerrain(GetTerrain());
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private void PathfindingInitialze()
+    {
+        _pathfinding = gameObject.AddComponent<Pathfinding>();
+        _pathfinding.SetSeekerType(seekerType);
+
+        if (grid != null)
+        {
+            _pathfinding.SetGrid(grid);
+        }
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private Terrain GetTerrain()
+    {
+        Collider[] hitcollider = Physics.OverlapSphere(transform.position, SeekerManager.Instance.GetTerrainFindRadius());
+
+        if (hitcollider == null)
+        {
+            return null;
+        }
+
+        if (hitcollider.Length == 0)
+        {
+            return null;
+        }
+
+        int hitcolliderLength = hitcollider.Length;
+
+        for (int i = 0; i < hitcolliderLength; i++)
+        {
+            Terrain terrain = hitcollider[i].gameObject.GetComponent<Terrain>();
+
+            if (terrain != null)
+            {
+                return terrain;
+            }
+        }
+
+        return null;
+    }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -27,12 +92,12 @@ public class SeekerController : MonoBehaviour
 
         if (IsSeekerWalkDetectionNavObs(other.gameObject))
         {
-            if (pathfinding == null)
+            if (_pathfinding == null)
             {
                 return;
             }
 
-            pathfinding.SeekerDetecetNavObs();
+            _pathfinding.SeekerDetecetNavObs();
         }
     }
 

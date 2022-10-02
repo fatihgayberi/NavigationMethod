@@ -246,8 +246,6 @@ GameObject:
   - component: {fileID: 102055693}
   - component: {fileID: 102055697}
   - component: {fileID: 102055694}
-  - component: {fileID: 102055692}
-  - component: {fileID: 102055691}
   - component: {fileID: 102055696}
   m_Layer: 0
   m_Name: Seeker (3)
@@ -271,39 +269,6 @@ Transform:
   m_Father: {fileID: 1561572594}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &102055691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 102055689}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 855e868289c1843b09c78e143b2b1288, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 336693192}
-  worldSizeExpandStep: {x: 10, y: 10}
-  worldSizeExpandStepMax: {x: 100, y: 100}
-  gridWorldSize: {x: 30, y: 30}
-  nodeRadius: 0.5
---- !u!114 &102055692
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 102055689}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceccdd2eca5974089b87e95c761e83d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grid: {fileID: 102055691}
-  distTolerance: 1
-  newRotaWaitTime: 0
-  maxSeekerSlope: 50
 --- !u!23 &102055693
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -380,7 +345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1316a68a249264b8f20cabd4d5109d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathfinding: {fileID: 102055692}
+  seekerType: 1
 --- !u!54 &102055697
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -887,6 +852,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dontDestroyOnLoad: 0
+  terrainFindRadius: 1
+  seekerDatasArray:
+  - seekerType: 1
+    gridDatas:
+      worldSizeExpandStep: {x: 10, y: 10}
+      worldSizeExpandStepMax: {x: 100, y: 100}
+      gridWorldSize: {x: 30, y: 30}
+      nodeRadius: 0.5
+    pathfindingDatas:
+      distTolerance: 0
+      newRotaWaitTime: 0
+      maxSeekerSlope: 50
 --- !u!114 &814537600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1410,7 +1387,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54d3cc5b2205ea146894193021b9b4ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selectPathfinding: {fileID: 0}
+  _selectPathfindingList: []
   targetPos: {x: 0, y: 0, z: 0}
 --- !u!4 &1566647751
 Transform:
@@ -1535,8 +1512,6 @@ GameObject:
   - component: {fileID: 1816614615}
   - component: {fileID: 1816614619}
   - component: {fileID: 1816614616}
-  - component: {fileID: 1816614614}
-  - component: {fileID: 1816614613}
   - component: {fileID: 1816614618}
   m_Layer: 0
   m_Name: Seeker (1)
@@ -1560,39 +1535,6 @@ Transform:
   m_Father: {fileID: 1561572594}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1816614613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1816614611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 855e868289c1843b09c78e143b2b1288, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 336693192}
-  worldSizeExpandStep: {x: 10, y: 10}
-  worldSizeExpandStepMax: {x: 100, y: 100}
-  gridWorldSize: {x: 30, y: 30}
-  nodeRadius: 0.5
---- !u!114 &1816614614
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1816614611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceccdd2eca5974089b87e95c761e83d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grid: {fileID: 1816614613}
-  distTolerance: 1
-  newRotaWaitTime: 0
-  maxSeekerSlope: 50
 --- !u!23 &1816614615
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1669,7 +1611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1316a68a249264b8f20cabd4d5109d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathfinding: {fileID: 1816614614}
+  seekerType: 1
 --- !u!54 &1816614619
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1809,8 +1751,6 @@ GameObject:
   - component: {fileID: 1868916053}
   - component: {fileID: 1868916057}
   - component: {fileID: 1868916054}
-  - component: {fileID: 1868916052}
-  - component: {fileID: 1868916051}
   - component: {fileID: 1868916056}
   m_Layer: 0
   m_Name: Seeker (2)
@@ -1834,39 +1774,6 @@ Transform:
   m_Father: {fileID: 1561572594}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1868916051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1868916049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 855e868289c1843b09c78e143b2b1288, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  terrain: {fileID: 336693192}
-  worldSizeExpandStep: {x: 10, y: 10}
-  worldSizeExpandStepMax: {x: 100, y: 100}
-  gridWorldSize: {x: 30, y: 30}
-  nodeRadius: 0.5
---- !u!114 &1868916052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1868916049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceccdd2eca5974089b87e95c761e83d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grid: {fileID: 1868916051}
-  distTolerance: 1
-  newRotaWaitTime: 0
-  maxSeekerSlope: 50
 --- !u!23 &1868916053
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1943,7 +1850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1316a68a249264b8f20cabd4d5109d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathfinding: {fileID: 1868916052}
+  seekerType: 1
 --- !u!54 &1868916057
 Rigidbody:
   m_ObjectHideFlags: 0
