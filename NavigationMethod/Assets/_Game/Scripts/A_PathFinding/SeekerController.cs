@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SeekerController : MonoBehaviour
 {
-    [SerializeField] private Pathfinding pathfinding;
+    [SerializeField] private SeekerPathfinding seekerPathfinding;
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -27,12 +27,12 @@ public class SeekerController : MonoBehaviour
 
         if (IsSeekerWalkDetectionNavObs(other.gameObject))
         {
-            if (pathfinding == null)
+            if (seekerPathfinding == null)
             {
                 return;
             }
 
-            pathfinding.SeekerDetecetNavObs();
+            seekerPathfinding.SeekerDetecetNavObs();
         }
     }
 

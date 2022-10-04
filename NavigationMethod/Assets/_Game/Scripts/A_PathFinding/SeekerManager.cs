@@ -6,7 +6,14 @@ using Wonnasmith;
 
 public class SeekerManager : Singleton<SeekerManager>
 {
-    public delegate void SeekerManagerSeekerCharacterMovePathGenerator(Pathfinding pathfinding, Vector3 targetPos);
+    public delegate void SeekerManagerSeekerCharacterMovePathGenerator(SeekerPathfinding seekerPathfinding, Vector3 targetPos);
+
+    enum SeekerType
+    {
+        NONE,
+
+        SeekerType_1
+    }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -22,14 +29,14 @@ public class SeekerManager : Singleton<SeekerManager>
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    private void OnSeekerCharacterMovePathGenerator(Pathfinding pathfinding, Vector3 targetPos)
+    private void OnSeekerCharacterMovePathGenerator(SeekerPathfinding seekerPathfinding, Vector3 targetPos)
     {
-        if (pathfinding == null)
+        if (seekerPathfinding == null)
         {
             return;
         }
 
-        pathfinding.FindPath(targetPos);
+        seekerPathfinding.FindPath(targetPos);
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
