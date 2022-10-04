@@ -5,24 +5,25 @@ using System;
 
 public class SeekerPathfinding : MonoBehaviour
 {
-    public bool isTEST;
-
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    #region "PathFind for Value"
-    /***********************************************************/
-    [Header("===============PathFind for Value===============")]
-    /***********************************************************/
-    [Space(10)]
-    [SerializeField] private SeekerGrid seekerGrid;
-    [SerializeField] private float distTolerance;
-    [SerializeField] private float newRotaWaitTime;
-    [SerializeField] private float maxSeekerSlope;
-    #endregion
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
+    private SeekerGrid _seekerGrid;
     private Coroutine _newRotaCoroutine;
     private WaitForSeconds _newRotaCalculateWaitTime;
     private Vector3 _targetPos;
+    private SeekerManager.SeekerType _seekerType;
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    public void SetSeekerGrid(SeekerGrid seekerGrid)
+    {
+        _seekerGrid = seekerGrid;
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    public void SetSeekerType(SeekerManager.SeekerType seekerType)
+    {
+        _seekerType = seekerType;
+    }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -30,10 +31,10 @@ public class SeekerPathfinding : MonoBehaviour
     {
         _targetPos = targetPos;
 
-        seekerGrid.SeekerGridInitialize(Vector3.zero, _targetPos - transform.position);
+        _seekerGrid.SeekerGridInitialize(Vector3.zero, _targetPos - transform.position);
 
-        Node startNode = seekerGrid.NodeFromWorldPoint(Vector3.zero);
-        Node targetNode = seekerGrid.NodeFromWorldPoint(_targetPos - transform.position);
+        Node startNode = _seekerGrid.NodeFromWorldPoint(Vector3.zero);
+        Node targetNode = _seekerGrid.NodeFromWorldPoint(_targetPos - transform.position);
 
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
@@ -64,13 +65,23 @@ public class SeekerPathfinding : MonoBehaviour
             }
             else if (openSet.Count == 1)
             {
-                seekerGrid.SeekerGridExpand();
+                _seekerGrid.SeekerGridExpand();
                 return;
             }
 
-            foreach (Node neighbour in seekerGrid.GetNeighbours(node))
+            foreach (Node neighbour in _seekerGrid.GetNeighbours(node))
             {
-                if (!IsWalkableControl(neighbour.worldPosition) || closedSet.Contains(neighbour) || !IsVerySlopeControl(neighbour, node))
+                if (closedSet.Contains(neighbour))
+                {
+                    continue;
+                }
+
+                if (!IsWalkableControl(neighbour.worldPosition))
+                {
+                    continue;
+                }
+
+                if (!IsVerySlopeControl(neighbour, node))
                 {
                     continue;
                 }
@@ -95,14 +106,20 @@ public class SeekerPathfinding : MonoBehaviour
     {
         float dist = Vector3.Distance(_targetPos, transform.position);
 
-        if (dist <= distTolerance)
+        if (dist <= SeekerManager.Instance.GetSeekerSeekerPathfindingDatas(_seekerType).distTolerance)
         {
-            Debug.Log("DUR YOLCU 07");
-
-            // return;
+            Debug.Log("DUR YOLCU 07 zaten çok yakındasın ilerlemene gerek yok");
+            return;
         }
 
         Debug.Log("Yeni rota hesaplanıyor");
+
+        if (SeekerManager.Instance.GetSeekerSeekerPathfindingDatas(_seekerType).newRotaWaitTime == 0)
+        {
+            Debug.Log("direkt Yeni rota hesaplanıyor");
+            FindPath(_targetPos);
+            return;
+        }
 
         if (_newRotaCoroutine != null)
         {
@@ -118,9 +135,10 @@ public class SeekerPathfinding : MonoBehaviour
     {
         if (_newRotaCalculateWaitTime == null)
         {
-            _newRotaCalculateWaitTime = new WaitForSeconds(newRotaWaitTime);
+            _newRotaCalculateWaitTime = new WaitForSeconds(SeekerManager.Instance.GetSeekerSeekerPathfindingDatas(_seekerType).newRotaWaitTime);
         }
 
+        Debug.Log("Yeni rota hesaplamak için zaman geçmesi bekleniyor::" + SeekerManager.Instance.GetSeekerSeekerPathfindingDatas(_seekerType).newRotaWaitTime);
         yield return _newRotaCalculateWaitTime;
 
         FindPath(_targetPos);
@@ -130,7 +148,7 @@ public class SeekerPathfinding : MonoBehaviour
 
     private bool IsWalkableControl(Vector3 worldPoint)
     {
-        Collider[] hitcollider = Physics.OverlapSphere(worldPoint, seekerGrid.nodeRadius);
+        Collider[] hitcollider = Physics.OverlapSphere(worldPoint, SeekerManager.Instance.GetNodeRadius(_seekerType));
 
         if (hitcollider == null)
         {
@@ -161,14 +179,9 @@ public class SeekerPathfinding : MonoBehaviour
 
     private bool IsVerySlopeControl(Node neighbour, Node node)
     {
-        if (isTEST)
-        {
-            return true;
-        }
-
         float slope = SlopeCalculator(neighbour, node);
 
-        if (slope <= maxSeekerSlope)
+        if (slope <= SeekerManager.Instance.GetSeekerSeekerPathfindingDatas(_seekerType).maxSeekerSlope)
         {
             return true;
         }
@@ -198,10 +211,10 @@ public class SeekerPathfinding : MonoBehaviour
 
         float slope = delta_Y / dist;
 
-        Debug.Log("delta_Y:::" + delta_Y);
-        Debug.Log("dist:::" + dist);
-        Debug.Log("slope:::" + (delta_Y / dist));
-        Debug.Log("slope_Yuzde:::" + Wonnasmith.FloatExtensionMethods.FloatRemap(slope, 0, 1, 0, 100));
+        // Debug.Log("delta_Y:::" + delta_Y);
+        // Debug.Log("dist:::" + dist);
+        // Debug.Log("slope:::" + (delta_Y / dist));
+        // Debug.Log("slopePercent:::" + Wonnasmith.FloatExtensionMethods.FloatRemap(slope, 0, 1, 0, 100));
 
         return Wonnasmith.FloatExtensionMethods.FloatRemap(slope, 0, 1, 0, 100);
     }
@@ -220,8 +233,9 @@ public class SeekerPathfinding : MonoBehaviour
         }
 
         path.Reverse();
+        Debug.Log("<color=green>:::YOL BULUNDU:::</color>");
 
-        seekerGrid.pathTEST = path;
+        _seekerGrid.pathTEST = path;
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]

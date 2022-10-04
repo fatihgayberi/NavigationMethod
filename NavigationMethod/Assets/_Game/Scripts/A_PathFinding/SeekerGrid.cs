@@ -4,23 +4,13 @@ using System.Collections.Generic;
 
 public class SeekerGrid : MonoBehaviour
 {
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-    #region "SeekerGrid for Vaue"
-    /*****************************************************/
-    [Header("===============SeekerGrid for Vaue===============")]
-    /*****************************************************/
-    [SerializeField] private Terrain terrain;
-    [SerializeField] private Vector2 worldSizeExpandStep;
-    [SerializeField] private Vector2 worldSizeExpandStepMax;
-    #endregion
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+    private Node[,] _seekerGridArray;
+    private Vector3 _seekerGridWorldSize;
 
-    public Vector2 seekerGridWorldSize;
-    public float nodeRadius;
-    Node[,] seekerGrid;
+    private float _nodeDiameter;
+    private int _seekerGridSizeX, _seekerGridSizeZ;
 
-    float nodeDiameter;
-    int seekerGridSizeX, seekerGridSizeY;
+    private SeekerManager.SeekerType _seekerType;
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -48,26 +38,33 @@ public class SeekerGrid : MonoBehaviour
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
+    public void SetSeekerType(SeekerManager.SeekerType seekerType)
+    {
+        _seekerType = seekerType;
+    }
+    
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     public void SeekerGridInitialize(Vector3 startPos, Vector3 targetPos)
     {
-        Vector2 dist;
+        Vector3 dist;
 
         dist.x = Mathf.Abs(startPos.x - targetPos.x) * 2;
-        dist.y = Mathf.Abs(startPos.z - targetPos.z) * 2;
+        dist.z = Mathf.Abs(startPos.z - targetPos.z) * 2;
 
-        if (seekerGridWorldSize.x < dist.x)
+        if (_seekerGridWorldSize.x < dist.x)
         {
-            seekerGridWorldSize.x = dist.x;
+            _seekerGridWorldSize.x = dist.x;
         }
 
-        if (seekerGridWorldSize.y < dist.y)
+        if (_seekerGridWorldSize.z < dist.z)
         {
-            seekerGridWorldSize.y = dist.y;
+            _seekerGridWorldSize.z = dist.z;
         }
 
-        nodeDiameter = nodeRadius * 2;
-        seekerGridSizeX = Mathf.RoundToInt(seekerGridWorldSize.x / nodeDiameter);
-        seekerGridSizeY = Mathf.RoundToInt(seekerGridWorldSize.y / nodeDiameter);
+        _nodeDiameter = SeekerManager.Instance.GetNodeRadius(_seekerType) * 2;
+        _seekerGridSizeX = Mathf.RoundToInt(_seekerGridWorldSize.x / _nodeDiameter);
+        _seekerGridSizeZ = Mathf.RoundToInt(_seekerGridWorldSize.z / _nodeDiameter);
         CreateSeekerGrid();
     }
 
@@ -75,9 +72,9 @@ public class SeekerGrid : MonoBehaviour
 
     public void SeekerGridInitialize()
     {
-        nodeDiameter = nodeRadius * 2;
-        seekerGridSizeX = Mathf.RoundToInt(seekerGridWorldSize.x / nodeDiameter);
-        seekerGridSizeY = Mathf.RoundToInt(seekerGridWorldSize.y / nodeDiameter);
+        _nodeDiameter = SeekerManager.Instance.GetNodeRadius(_seekerType) * 2;
+        _seekerGridSizeX = Mathf.RoundToInt(_seekerGridWorldSize.x / _nodeDiameter);
+        _seekerGridSizeZ = Mathf.RoundToInt(_seekerGridWorldSize.z / _nodeDiameter);
         CreateSeekerGrid();
     }
 
@@ -85,17 +82,17 @@ public class SeekerGrid : MonoBehaviour
 
     void CreateSeekerGrid()
     {
-        seekerGrid = new Node[seekerGridSizeX, seekerGridSizeY];
-        Vector3 worldBottomLeft = transform.position - Vector3.right * seekerGridWorldSize.x / 2 - Vector3.forward * seekerGridWorldSize.y / 2;
+        _seekerGridArray = new Node[_seekerGridSizeX, _seekerGridSizeZ];
+        Vector3 worldBottomLeft = transform.position - Vector3.right * _seekerGridWorldSize.x / 2 - Vector3.forward * _seekerGridWorldSize.z / 2;
 
-        for (int x = 0; x < seekerGridSizeX; x++)
+        for (int x = 0; x < _seekerGridSizeX; x++)
         {
-            for (int y = 0; y < seekerGridSizeY; y++)
+            for (int y = 0; y < _seekerGridSizeZ; y++)
             {
-                Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
-                worldPoint.y = GetTerrainPositionY(worldPoint);
+                Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * _nodeDiameter + SeekerManager.Instance.GetNodeRadius(_seekerType)) + Vector3.forward * (y * _nodeDiameter + SeekerManager.Instance.GetNodeRadius(_seekerType));
+                worldPoint.y = TerrainsManager.Instance.GetTerrainSampleHeight(worldPoint);
 
-                seekerGrid[x, y] = new Node(worldPoint, x, y);
+                _seekerGridArray[x, y] = new Node(worldPoint, x, y);
             }
         }
     }
@@ -116,9 +113,9 @@ public class SeekerGrid : MonoBehaviour
                 int checkX = node.seekerGridX + x;
                 int checkY = node.seekerGridY + y;
 
-                if (checkX >= 0 && checkX < seekerGridSizeX && checkY >= 0 && checkY < seekerGridSizeY)
+                if (checkX >= 0 && checkX < _seekerGridSizeX && checkY >= 0 && checkY < _seekerGridSizeZ)
                 {
-                    neighbours.Add(seekerGrid[checkX, checkY]);
+                    neighbours.Add(_seekerGridArray[checkX, checkY]);
                 }
             }
         }
@@ -128,59 +125,48 @@ public class SeekerGrid : MonoBehaviour
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    private float GetTerrainPositionY(Vector3 worldPoint)
-    {
-        if (terrain == null)
-        {
-            return worldPoint.y;
-        }
-
-        float terrainWorldY = terrain.transform.position.y;
-        float terrainSampleLocal = terrain.SampleHeight(worldPoint);
-        float terrainSampleWorld = terrainWorldY + terrainSampleLocal;
-        return terrainSampleWorld;
-    }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     public Node NodeFromWorldPoint(Vector3 worldPosition)
     {
-        float percentX = (worldPosition.x + seekerGridWorldSize.x / 2) / seekerGridWorldSize.x;
-        float percentY = (worldPosition.z + seekerGridWorldSize.y / 2) / seekerGridWorldSize.y;
+        float percentX = (worldPosition.x + _seekerGridWorldSize.x / 2) / _seekerGridWorldSize.x;
+        float percentZ = (worldPosition.z + _seekerGridWorldSize.z / 2) / _seekerGridWorldSize.z;
         percentX = Mathf.Clamp01(percentX);
-        percentY = Mathf.Clamp01(percentY);
+        percentZ = Mathf.Clamp01(percentZ);
 
-        int x = Mathf.RoundToInt((seekerGridSizeX - 1) * percentX);
-        int y = Mathf.RoundToInt((seekerGridSizeY - 1) * percentY);
-        return seekerGrid[x, y];
+        int x = Mathf.RoundToInt((_seekerGridSizeX - 1) * percentX);
+        int z = Mathf.RoundToInt((_seekerGridSizeZ - 1) * percentZ);
+        return _seekerGridArray[x, z];
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public void SeekerGridExpand()
     {
-        if (worldSizeExpandStepMax == seekerGridWorldSize)
+        Vector3 worldSizeExpandStepMax = SeekerManager.Instance.GetSeekerGridDatas(_seekerType).worldSizeExpandStepMax;
+        Vector3 worldSizeExpandStep = SeekerManager.Instance.GetSeekerGridDatas(_seekerType).worldSizeExpandStep;
+        
+        if (worldSizeExpandStepMax == _seekerGridWorldSize)
         {
-            Debug.Log("MAX boyutlara ulaştı daha fazla arama yapmaz, rame yazık zavallı ram, bulamadık abi yol yok otur ağla, bilmem belki de dünya düzdür ve biz de sonuna gelmişizdir ondan da olabilir");
+            Debug.Log("<color=red>MAX boyutlara ulaştı daha fazla arama yapmaz, rame yazık zavallı ram, bulamadık abi yol yok otur ağla, bilmem belki de dünya düzdür ve biz de sonuna gelmişizdir ondan da olabilir</color>");
             return;
         }
 
-        if (worldSizeExpandStepMax.x >= seekerGridWorldSize.x + worldSizeExpandStep.x)
+
+        if (worldSizeExpandStepMax.x >= _seekerGridWorldSize.x + worldSizeExpandStep.x)
         {
-            seekerGridWorldSize.x = worldSizeExpandStepMax.x;
+            _seekerGridWorldSize.x = worldSizeExpandStepMax.x;
         }
         else
         {
-            seekerGridWorldSize.x += worldSizeExpandStep.x;
+            _seekerGridWorldSize.x += worldSizeExpandStep.x;
         }
 
-        if (worldSizeExpandStepMax.y >= seekerGridWorldSize.y + worldSizeExpandStep.y)
+        if (worldSizeExpandStepMax.z >= _seekerGridWorldSize.z + worldSizeExpandStep.z)
         {
-            seekerGridWorldSize.y = worldSizeExpandStepMax.y;
+            _seekerGridWorldSize.z = worldSizeExpandStepMax.z;
         }
         else
         {
-            seekerGridWorldSize.y += worldSizeExpandStep.y;
+            _seekerGridWorldSize.z += worldSizeExpandStep.z;
         }
 
         SeekerGridInitialize();
@@ -190,7 +176,7 @@ public class SeekerGrid : MonoBehaviour
 
     private bool IsWalkableControl_TEST_FOR_GIZMOS(Vector3 worldPoint)
     {
-        Collider[] hitcollider = Physics.OverlapSphere(worldPoint, nodeRadius);
+        Collider[] hitcollider = Physics.OverlapSphere(worldPoint, SeekerManager.Instance.GetNodeRadius(_seekerType));
 
         if (hitcollider == null)
         {
@@ -230,52 +216,52 @@ public class SeekerGrid : MonoBehaviour
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public List<Node> pathTEST;
-    void OnDrawGizmos()
-    {
-        if (pathTEST == null)
-        {
-            return;
-        }
-
-        if (pathTEST.Count == 0)
-        {
-            return;
-        }
-
-        Gizmos.DrawWireCube(transform.position, new Vector3(seekerGridWorldSize.x, 1, seekerGridWorldSize.y));
-
-        if (seekerGrid != null)
-        {
-            foreach (Node n in seekerGrid)
-            {
-                Gizmos.color = IsWalkableControl_TEST_FOR_GIZMOS(n.worldPosition) ? Color.white : Color.red;
-                if (pathTEST != null)
-                    if (pathTEST.Contains(n))
-                        Gizmos.color = Color.black;
-                Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
-            }
-        }
-    }
-
     // void OnDrawGizmos()
     // {
-    //     Gizmos.DrawWireCube(transform.position, new Vector3(seekerGridWorldSize.x, 1, seekerGridWorldSize.y));
-
     //     if (pathTEST == null)
     //     {
     //         return;
     //     }
 
-    //     if (seekerGrid != null)
+    //     if (pathTEST.Count == 0)
     //     {
-    //         foreach (Node n in seekerGrid)
+    //         return;
+    //     }
+
+    //     Gizmos.DrawWireCube(transform.position, new Vector3(seekerGridDefaultWorldSize.x, 1, seekerGridDefaultWorldSize.z));
+
+    //     if (_seekerGrid != null)
+    //     {
+    //         foreach (Node n in _seekerGrid)
     //         {
-    //             if (pathTEST.Contains(n))
-    //             {
-    //                 Gizmos.color = Color.black;
-    //                 Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
-    //             }
+    //             Gizmos.color = IsWalkableControl_TEST_FOR_GIZMOS(n.worldPosition) ? Color.white : Color.red;
+    //             if (pathTEST != null)
+    //                 if (pathTEST.Contains(n))
+    //                     Gizmos.color = Color.black;
+    //             Gizmos.DrawCube(n.worldPosition, Vector3.one * (_nodeDiameter - .1f));
     //         }
     //     }
     // }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position, new Vector3(_seekerGridWorldSize.x, 1, _seekerGridWorldSize.z));
+
+        if (pathTEST == null)
+        {
+            return;
+        }
+
+        if (_seekerGridArray != null)
+        {
+            foreach (Node n in _seekerGridArray)
+            {
+                if (pathTEST.Contains(n))
+                {
+                    Gizmos.color = Color.black;
+                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (_nodeDiameter - .1f));
+                }
+            }
+        }
+    }
 }

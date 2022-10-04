@@ -4,7 +4,35 @@ using UnityEngine;
 
 public class SeekerController : MonoBehaviour
 {
-    [SerializeField] private SeekerPathfinding seekerPathfinding;
+    [SerializeField] private SeekerManager.SeekerType seekerType;
+
+    private SeekerPathfinding _seekerPathfinding;
+    private SeekerGrid _seekerGrid;
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private void Awake()
+    {
+        SeekerGridInitialize();
+        SeekerPathfindingInitialize();
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private void SeekerGridInitialize()
+    {
+        _seekerGrid = gameObject.AddComponent<SeekerGrid>();
+        _seekerGrid.SetSeekerType(seekerType);
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private void SeekerPathfindingInitialize()
+    {
+        _seekerPathfinding = gameObject.AddComponent<SeekerPathfinding>();
+        _seekerPathfinding.SetSeekerGrid(_seekerGrid);
+        _seekerPathfinding.SetSeekerType(seekerType);
+    }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -27,12 +55,12 @@ public class SeekerController : MonoBehaviour
 
         if (IsSeekerWalkDetectionNavObs(other.gameObject))
         {
-            if (seekerPathfinding == null)
+            if (_seekerPathfinding == null)
             {
                 return;
             }
 
-            seekerPathfinding.SeekerDetecetNavObs();
+            _seekerPathfinding.SeekerDetecetNavObs();
         }
     }
 

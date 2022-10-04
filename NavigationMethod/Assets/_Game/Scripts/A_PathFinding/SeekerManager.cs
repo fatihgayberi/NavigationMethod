@@ -4,16 +4,62 @@ using System.Collections.Generic;
 using UnityEngine;
 using Wonnasmith;
 
+[Serializable]
 public class SeekerManager : Singleton<SeekerManager>
 {
-    public delegate void SeekerManagerSeekerCharacterMovePathGenerator(SeekerPathfinding seekerPathfinding, Vector3 targetPos);
+    public delegate void SeekerManagerSeekerCharacterMovePathGenerator(List<SeekerPathfinding> seekerPathfindingList, Vector3 targetPos);
 
-    enum SeekerType
+    public enum SeekerType
     {
         NONE,
 
-        SeekerType_1
+        Seeker_1,
+        Seeker_2,
+        Seeker_3
     }
+
+    [Serializable]
+    class SeekerDatas
+    {
+        [Tooltip("SeekerType")]
+        public SeekerType seekerType;
+
+        [Tooltip("Ne kadar detaylı arama yapsın (node büyüklüğü)")]
+        public float nodeRadius;
+
+        public GridDatas gridDatas;
+
+        public SeekerPathfindingDatas seekerPathfindingDatas;
+    }
+
+    [Serializable]
+    public class GridDatas
+    {
+        [Tooltip("Gorus mesafemi kacar adim genisleteyim")]
+        public Vector2 worldSizeExpandStep;
+
+        [Tooltip("Max ne kadarlık bir alan icerisnde arama yapayim")]
+        public Vector2 worldSizeExpandStepMax;
+
+        // [Tooltip("Default gorus mesafem kac olsun")]
+        // public Vector2 gridWorldSize;
+    }
+
+    [Serializable]
+    public class SeekerPathfindingDatas
+    {
+        [Tooltip("Max ne kadar uzaksam yeni yol arayayim")]
+        public float distTolerance;
+
+        [Tooltip("Yeni rota hesaplamak icin kac saniye bekleyelim")]
+        public float newRotaWaitTime;
+
+        [Tooltip("Egim max yuzde kac olursa yuruyebileyim")]
+        [Range(0f, 100f)]
+        public float maxSeekerSlope;
+    }
+
+    [SerializeField] private SeekerDatas[] seekerDatasArray;
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -21,7 +67,6 @@ public class SeekerManager : Singleton<SeekerManager>
     {
         SeekerInputMoveController.SeekerCharacterMovePathGenerator += OnSeekerCharacterMovePathGenerator;
     }
-
     private void OnDisable()
     {
         SeekerInputMoveController.SeekerCharacterMovePathGenerator -= OnSeekerCharacterMovePathGenerator;
@@ -29,24 +74,88 @@ public class SeekerManager : Singleton<SeekerManager>
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    private void OnSeekerCharacterMovePathGenerator(SeekerPathfinding seekerPathfinding, Vector3 targetPos)
+    private void OnSeekerCharacterMovePathGenerator(List<SeekerPathfinding> seekerPathfindingList, Vector3 targetPos)
     {
-        if (seekerPathfinding == null)
+        if (seekerPathfindingList == null)
         {
             return;
         }
 
-        seekerPathfinding.FindPath(targetPos);
+        int seekerPathfindingListCount = seekerPathfindingList.Count;
+
+        for (int i = 0; i < seekerPathfindingListCount; i++)
+        {
+            seekerPathfindingList[i].FindPath(targetPos);
+        }
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    /// <summary>
-    /// Test için kullanılır
-    /// </summary>
-    public void GizmosClear()
+    private SeekerDatas GetSeekerDatas(SeekerType seekerType)
     {
+        int seekerDatasArrayLength = seekerDatasArray.Length;
 
+        for (int i = 0; i < seekerDatasArrayLength; i++)
+        {
+            if (seekerDatasArray[i].seekerType == seekerType)
+            {
+                return seekerDatasArray[i];
+            }
+        }
+
+        return null;
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    public float GetNodeRadius(SeekerType seekerType)
+    {
+        SeekerDatas seekerDatas = GetSeekerDatas(seekerType);
+
+        if (seekerDatas == null)
+        {
+            return 0.5f;
+        }
+
+        return seekerDatas.nodeRadius;
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    public GridDatas GetSeekerGridDatas(SeekerType seekerType)
+    {
+        SeekerDatas seekerDatas = GetSeekerDatas(seekerType);
+
+        if (seekerDatas == null)
+        {
+            seekerDatas = new SeekerDatas();
+        }
+
+        if (seekerDatas.gridDatas == null)
+        {
+            seekerDatas.gridDatas = new GridDatas();
+        }
+
+        return seekerDatas.gridDatas;
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    public SeekerPathfindingDatas GetSeekerSeekerPathfindingDatas(SeekerType seekerType)
+    {
+        SeekerDatas seekerDatas = GetSeekerDatas(seekerType);
+
+        if (seekerDatas == null)
+        {
+            seekerDatas = new SeekerDatas();
+        }
+
+        if (seekerDatas.seekerPathfindingDatas == null)
+        {
+            seekerDatas.seekerPathfindingDatas = new SeekerPathfindingDatas();
+        }
+
+        return seekerDatas.seekerPathfindingDatas;
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
