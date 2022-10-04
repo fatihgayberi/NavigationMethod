@@ -13,7 +13,7 @@ public class Pathfinding : MonoBehaviour
     [Header("===============PathFind for Value===============")]
     /***********************************************************/
     [Space(10)]
-    [SerializeField] private Grid grid;
+    [SerializeField] private SeekerGrid seekerGrid;
     [SerializeField] private float distTolerance;
     [SerializeField] private float newRotaWaitTime;
     [SerializeField] private float maxSeekerSlope;
@@ -30,10 +30,10 @@ public class Pathfinding : MonoBehaviour
     {
         _targetPos = targetPos;
 
-        grid.GridInitialize(Vector3.zero, _targetPos - transform.position);
+        seekerGrid.SeekerGridInitialize(Vector3.zero, _targetPos - transform.position);
 
-        Node startNode = grid.NodeFromWorldPoint(Vector3.zero);
-        Node targetNode = grid.NodeFromWorldPoint(_targetPos - transform.position);
+        Node startNode = seekerGrid.NodeFromWorldPoint(Vector3.zero);
+        Node targetNode = seekerGrid.NodeFromWorldPoint(_targetPos - transform.position);
 
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
@@ -64,11 +64,11 @@ public class Pathfinding : MonoBehaviour
             }
             else if (openSet.Count == 1)
             {
-                grid.GridExpand();
+                seekerGrid.SeekerGridExpand();
                 return;
             }
 
-            foreach (Node neighbour in grid.GetNeighbours(node))
+            foreach (Node neighbour in seekerGrid.GetNeighbours(node))
             {
                 if (!IsWalkableControl(neighbour.worldPosition) || closedSet.Contains(neighbour) || !IsVerySlopeControl(neighbour, node))
                 {
@@ -130,7 +130,7 @@ public class Pathfinding : MonoBehaviour
 
     private bool IsWalkableControl(Vector3 worldPoint)
     {
-        Collider[] hitcollider = Physics.OverlapSphere(worldPoint, grid.nodeRadius);
+        Collider[] hitcollider = Physics.OverlapSphere(worldPoint, seekerGrid.nodeRadius);
 
         if (hitcollider == null)
         {
@@ -221,15 +221,15 @@ public class Pathfinding : MonoBehaviour
 
         path.Reverse();
 
-        grid.pathTEST = path;
+        seekerGrid.pathTEST = path;
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private int GetDistance(Node nodeA, Node nodeB)
     {
-        int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
-        int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
+        int dstX = Mathf.Abs(nodeA.seekerGridX - nodeB.seekerGridX);
+        int dstY = Mathf.Abs(nodeA.seekerGridY - nodeB.seekerGridY);
 
         if (dstX > dstY)
         {

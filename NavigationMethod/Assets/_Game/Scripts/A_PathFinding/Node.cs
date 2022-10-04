@@ -4,8 +4,8 @@ using System.Collections;
 public class Node
 {
     public Vector3 worldPosition;
-    public int gridX;
-    public int gridY;
+    public int seekerGridX;
+    public int seekerGridY;
 
     public int gCost;
     public int hCost;
@@ -13,11 +13,11 @@ public class Node
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    public Node(Vector3 _worldPos, int _gridX, int _gridY)
+    public Node(Vector3 _worldPos, int _seekerGridX, int _seekerGridY)
     {
         worldPosition = _worldPos;
-        gridX = _gridX;
-        gridY = _gridY;
+        seekerGridX = _seekerGridX;
+        seekerGridY = _seekerGridY;
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]

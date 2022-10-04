@@ -286,7 +286,7 @@ MonoBehaviour:
   terrain: {fileID: 336693192}
   worldSizeExpandStep: {x: 10, y: 10}
   worldSizeExpandStepMax: {x: 100, y: 100}
-  gridWorldSize: {x: 30, y: 30}
+  seekerGridWorldSize: {x: 30, y: 30}
   nodeRadius: 0.5
 --- !u!114 &102055692
 MonoBehaviour:
@@ -300,7 +300,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ceccdd2eca5974089b87e95c761e83d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grid: {fileID: 102055691}
+  isTEST: 0
+  seekerGrid: {fileID: 102055691}
   distTolerance: 1
   newRotaWaitTime: 0
   maxSeekerSlope: 50
@@ -1575,7 +1576,7 @@ MonoBehaviour:
   terrain: {fileID: 336693192}
   worldSizeExpandStep: {x: 10, y: 10}
   worldSizeExpandStepMax: {x: 100, y: 100}
-  gridWorldSize: {x: 30, y: 30}
+  seekerGridWorldSize: {x: 30, y: 30}
   nodeRadius: 0.5
 --- !u!114 &1816614614
 MonoBehaviour:
@@ -1589,7 +1590,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ceccdd2eca5974089b87e95c761e83d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grid: {fileID: 1816614613}
+  isTEST: 0
+  seekerGrid: {fileID: 1816614613}
   distTolerance: 1
   newRotaWaitTime: 0
   maxSeekerSlope: 50
@@ -1849,7 +1851,7 @@ MonoBehaviour:
   terrain: {fileID: 336693192}
   worldSizeExpandStep: {x: 10, y: 10}
   worldSizeExpandStepMax: {x: 100, y: 100}
-  gridWorldSize: {x: 30, y: 30}
+  seekerGridWorldSize: {x: 30, y: 30}
   nodeRadius: 0.5
 --- !u!114 &1868916052
 MonoBehaviour:
@@ -1863,7 +1865,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ceccdd2eca5974089b87e95c761e83d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grid: {fileID: 1868916051}
+  isTEST: 0
+  seekerGrid: {fileID: 1868916051}
   distTolerance: 1
   newRotaWaitTime: 0
   maxSeekerSlope: 50
