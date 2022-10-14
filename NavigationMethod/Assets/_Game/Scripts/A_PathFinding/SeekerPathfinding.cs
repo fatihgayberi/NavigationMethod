@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Dreamteck.Splines;
 
 public class SeekerPathfinding : MonoBehaviour
 {
@@ -11,7 +12,8 @@ public class SeekerPathfinding : MonoBehaviour
     private Vector3 _targetPos;
     private SeekerManager.SeekerType _seekerType;
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+    private SplineFollower _splineFollower;
+    private Spline _spline = new Spline(Spline.Type.CatmullRom);
 
     public void SetSeekerGrid(SeekerGrid seekerGrid)
     {
@@ -29,6 +31,17 @@ public class SeekerPathfinding : MonoBehaviour
 
     public void FindPath(Vector3 targetPos)
     {
+        _splineFollower = gameObject.GetComponent<SplineFollower>();
+
+        if (_splineFollower == null)
+        {
+
+            if (_splineFollower == null)
+            {
+                return;
+            }
+        }
+
         _targetPos = targetPos;
 
         _seekerGrid.SeekerGridInitialize(Vector3.zero, _targetPos - transform.position);
@@ -104,6 +117,10 @@ public class SeekerPathfinding : MonoBehaviour
 
     public void SeekerDetecetNavObs()
     {
+        SplineFollower splineFollower = gameObject.GetComponent<SplineFollower>();
+
+        splineFollower.follow = false;
+
         float dist = Vector3.Distance(_targetPos, transform.position);
 
         if (dist <= SeekerManager.Instance.GetSeekerSeekerPathfindingDatas(_seekerType).distTolerance)
@@ -233,9 +250,47 @@ public class SeekerPathfinding : MonoBehaviour
         }
 
         path.Reverse();
-        Debug.Log("<color=green>:::YOL BULUNDU:::</color>");
 
         _seekerGrid.pathTEST = path;
+
+        SplineEdit(path);
+
+        Debug.Log("<color=green>:::YOL BULUNDU YÜRÜ YA KULUM:::</color>");
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    private void SplineEdit(List<Node> path)
+    {
+        if (_splineFollower == null)
+        {
+            return;
+        }
+
+        Vector2 currentMotionOffset = _splineFollower.motion.offset;
+
+        _splineFollower.follow = false;
+
+        _spline.points = new SplinePoint[path.Count + 1];
+
+        _spline.points[0] = new SplinePoint(transform.position);
+
+        for (int i = 1; i < path.Count + 1; i++)
+        {
+            _spline.points[i] = new SplinePoint(path[i - 1].worldPosition);
+        }
+
+        _splineFollower.spline.SetPoints(_spline.points);
+
+        _splineFollower.motion.offset = currentMotionOffset;
+
+        _splineFollower.RebuildImmediate();
+
+        _splineFollower.SetPercent(0);
+
+        _splineFollower.spline.RebuildImmediate();
+
+        _splineFollower.follow = true;
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]

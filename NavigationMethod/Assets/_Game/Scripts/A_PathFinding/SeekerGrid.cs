@@ -42,7 +42,7 @@ public class SeekerGrid : MonoBehaviour
     {
         _seekerType = seekerType;
     }
-    
+
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public void SeekerGridInitialize(Vector3 startPos, Vector3 targetPos)
@@ -143,7 +143,7 @@ public class SeekerGrid : MonoBehaviour
     {
         Vector3 worldSizeExpandStepMax = SeekerManager.Instance.GetSeekerGridDatas(_seekerType).worldSizeExpandStepMax;
         Vector3 worldSizeExpandStep = SeekerManager.Instance.GetSeekerGridDatas(_seekerType).worldSizeExpandStep;
-        
+
         if (worldSizeExpandStepMax == _seekerGridWorldSize)
         {
             Debug.Log("<color=red>MAX boyutlara ulaştı daha fazla arama yapmaz, rame yazık zavallı ram, bulamadık abi yol yok otur ağla, bilmem belki de dünya düzdür ve biz de sonuna gelmişizdir ondan da olabilir</color>");
@@ -216,6 +216,9 @@ public class SeekerGrid : MonoBehaviour
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public List<Node> pathTEST;
+    public Color gizmosColor;
+    public bool isTestColorSelect = false;
+
     // void OnDrawGizmos()
     // {
     //     if (pathTEST == null)
@@ -252,14 +255,20 @@ public class SeekerGrid : MonoBehaviour
             return;
         }
 
+        if (!isTestColorSelect)
+        {
+            isTestColorSelect = true;
+            gizmosColor = gameObject.GetComponent<MeshRenderer>().material.color;
+        }
+
         if (_seekerGridArray != null)
         {
             foreach (Node n in _seekerGridArray)
             {
                 if (pathTEST.Contains(n))
                 {
-                    Gizmos.color = Color.black;
-                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (_nodeDiameter - .1f));
+                    Gizmos.color = gizmosColor;
+                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (_nodeDiameter - .5f));
                 }
             }
         }
