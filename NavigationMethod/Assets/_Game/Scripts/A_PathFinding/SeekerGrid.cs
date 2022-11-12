@@ -10,7 +10,7 @@ public class SeekerGrid : MonoBehaviour
     private float _nodeDiameter;
     private int _seekerGridSizeX, _seekerGridSizeZ;
 
-    private SeekerManager.SeekerType _seekerType;
+    private int _seekderDataIdx;
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
@@ -38,9 +38,9 @@ public class SeekerGrid : MonoBehaviour
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    public void SetSeekerType(SeekerManager.SeekerType seekerType)
+    public void SetSeekerDataIdx(int seekderDataIdx)
     {
-        _seekerType = seekerType;
+        _seekderDataIdx = seekderDataIdx;
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
@@ -62,9 +62,20 @@ public class SeekerGrid : MonoBehaviour
             _seekerGridWorldSize.z = dist.z;
         }
 
-        _nodeDiameter = SeekerManager.Instance.GetNodeRadius(_seekerType) * 2;
+        _nodeDiameter = SeekerManager.Instance.GetNodeRadius(_seekderDataIdx) * 2;
         _seekerGridSizeX = Mathf.RoundToInt(_seekerGridWorldSize.x / _nodeDiameter);
         _seekerGridSizeZ = Mathf.RoundToInt(_seekerGridWorldSize.z / _nodeDiameter);
+
+        if (_seekerGridSizeX <= 0)
+        {
+            _seekerGridSizeX = 1;
+        }
+
+        if (_seekerGridSizeZ <= 0)
+        {
+            _seekerGridSizeZ = 1;
+        }
+
         CreateSeekerGrid();
     }
 
@@ -72,9 +83,20 @@ public class SeekerGrid : MonoBehaviour
 
     public void SeekerGridInitialize()
     {
-        _nodeDiameter = SeekerManager.Instance.GetNodeRadius(_seekerType) * 2;
+        _nodeDiameter = SeekerManager.Instance.GetNodeRadius(_seekderDataIdx) * 2;
         _seekerGridSizeX = Mathf.RoundToInt(_seekerGridWorldSize.x / _nodeDiameter);
         _seekerGridSizeZ = Mathf.RoundToInt(_seekerGridWorldSize.z / _nodeDiameter);
+
+        if (_seekerGridSizeX <= 0)
+        {
+            _seekerGridSizeX = 1;
+        }
+
+        if (_seekerGridSizeZ <= 0)
+        {
+            _seekerGridSizeZ = 1;
+        }
+
         CreateSeekerGrid();
     }
 
@@ -89,7 +111,7 @@ public class SeekerGrid : MonoBehaviour
         {
             for (int y = 0; y < _seekerGridSizeZ; y++)
             {
-                Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * _nodeDiameter + SeekerManager.Instance.GetNodeRadius(_seekerType)) + Vector3.forward * (y * _nodeDiameter + SeekerManager.Instance.GetNodeRadius(_seekerType));
+                Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * _nodeDiameter + SeekerManager.Instance.GetNodeRadius(_seekderDataIdx)) + Vector3.forward * (y * _nodeDiameter + SeekerManager.Instance.GetNodeRadius(_seekderDataIdx));
                 worldPoint.y = TerrainsManager.Instance.GetTerrainSampleHeight(worldPoint);
 
                 _seekerGridArray[x, y] = new Node(worldPoint, x, y);
@@ -134,6 +156,9 @@ public class SeekerGrid : MonoBehaviour
 
         int x = Mathf.RoundToInt((_seekerGridSizeX - 1) * percentX);
         int z = Mathf.RoundToInt((_seekerGridSizeZ - 1) * percentZ);
+
+        Debug.Log("x::" + x + ":::z:::" + z + ":::worldPosition:::" + worldPosition, gameObject);
+
         return _seekerGridArray[x, z];
     }
 
@@ -141,12 +166,12 @@ public class SeekerGrid : MonoBehaviour
 
     public void SeekerGridExpand()
     {
-        Vector3 worldSizeExpandStepMax = SeekerManager.Instance.GetSeekerGridDatas(_seekerType).worldSizeExpandStepMax;
-        Vector3 worldSizeExpandStep = SeekerManager.Instance.GetSeekerGridDatas(_seekerType).worldSizeExpandStep;
+        Vector3 worldSizeExpandStepMax = SeekerManager.Instance.GetSeekerGridDatas(_seekderDataIdx).worldSizeExpandStepMax;
+        Vector3 worldSizeExpandStep = SeekerManager.Instance.GetSeekerGridDatas(_seekderDataIdx).worldSizeExpandStep;
 
         if (worldSizeExpandStepMax == _seekerGridWorldSize)
         {
-            Debug.Log("<color=red>MAX boyutlara ulaştı daha fazla arama yapmaz, rame yazık zavallı ram, bulamadık abi yol yok otur ağla, bilmem belki de dünya düzdür ve biz de sonuna gelmişizdir ondan da olabilir</color>");
+            Debug.Log("<color=red>MAX boyutlara ulaştı</color>");
             return;
         }
 
@@ -176,7 +201,7 @@ public class SeekerGrid : MonoBehaviour
 
     private bool IsWalkableControl_TEST_FOR_GIZMOS(Vector3 worldPoint)
     {
-        Collider[] hitcollider = Physics.OverlapSphere(worldPoint, SeekerManager.Instance.GetNodeRadius(_seekerType));
+        Collider[] hitcollider = Physics.OverlapSphere(worldPoint, SeekerManager.Instance.GetNodeRadius(_seekderDataIdx));
 
         if (hitcollider == null)
         {
@@ -219,33 +244,6 @@ public class SeekerGrid : MonoBehaviour
     public Color gizmosColor;
     public bool isTestColorSelect = false;
 
-    // void OnDrawGizmos()
-    // {
-    //     if (pathTEST == null)
-    //     {
-    //         return;
-    //     }
-
-    //     if (pathTEST.Count == 0)
-    //     {
-    //         return;
-    //     }
-
-    //     Gizmos.DrawWireCube(transform.position, new Vector3(seekerGridDefaultWorldSize.x, 1, seekerGridDefaultWorldSize.z));
-
-    //     if (_seekerGrid != null)
-    //     {
-    //         foreach (Node n in _seekerGrid)
-    //         {
-    //             Gizmos.color = IsWalkableControl_TEST_FOR_GIZMOS(n.worldPosition) ? Color.white : Color.red;
-    //             if (pathTEST != null)
-    //                 if (pathTEST.Contains(n))
-    //                     Gizmos.color = Color.black;
-    //             Gizmos.DrawCube(n.worldPosition, Vector3.one * (_nodeDiameter - .1f));
-    //         }
-    //     }
-    // }
-
     void OnDrawGizmos()
     {
         Gizmos.DrawWireCube(transform.position, new Vector3(_seekerGridWorldSize.x, 1, _seekerGridWorldSize.z));
@@ -258,7 +256,7 @@ public class SeekerGrid : MonoBehaviour
         if (!isTestColorSelect)
         {
             isTestColorSelect = true;
-            gizmosColor = gameObject.GetComponent<MeshRenderer>().material.color;
+            gizmosColor = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);//gameObject.GetComponent<MeshRenderer>().material.color;
         }
 
         if (_seekerGridArray != null)

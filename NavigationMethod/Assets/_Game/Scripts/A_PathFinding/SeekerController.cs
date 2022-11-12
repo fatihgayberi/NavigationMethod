@@ -4,34 +4,36 @@ using UnityEngine;
 
 public class SeekerController : MonoBehaviour
 {
-    [SerializeField] private SeekerManager.SeekerType seekerType;
+    [SerializeField] private string strSeekerLabel;
 
     private SeekerPathfinding _seekerPathfinding;
     private SeekerGrid _seekerGrid;
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    private void Awake()
+    private void Start()
     {
-        SeekerGridInitialize();
-        SeekerPathfindingInitialize();
+        int seekderIdx = SeekerManager.Instance.GetSeekerLabelIdx(strSeekerLabel);
+
+        SeekerGridInitialize(seekderIdx);
+        SeekerPathfindingInitialize(seekderIdx);
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    private void SeekerGridInitialize()
+    private void SeekerGridInitialize(int seekderIdx)
     {
         _seekerGrid = gameObject.AddComponent<SeekerGrid>();
-        _seekerGrid.SetSeekerType(seekerType);
+        _seekerGrid.SetSeekerDataIdx(seekderIdx);
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    private void SeekerPathfindingInitialize()
+    private void SeekerPathfindingInitialize(int seekderIdx)
     {
         _seekerPathfinding = gameObject.AddComponent<SeekerPathfinding>();
         _seekerPathfinding.SetSeekerGrid(_seekerGrid);
-        _seekerPathfinding.SetSeekerType(seekerType);
+        _seekerPathfinding.SetSeekerDataIdx(seekderIdx);
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]

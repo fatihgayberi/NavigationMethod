@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class SeekerInputMoveController : MonoBehaviour
 {
     public static event SeekerManager.SeekerManagerSeekerCharacterMovePathGenerator SeekerCharacterMovePathGenerator;

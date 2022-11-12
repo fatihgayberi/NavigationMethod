@@ -9,20 +9,11 @@ public class SeekerManager : Singleton<SeekerManager>
 {
     public delegate void SeekerManagerSeekerCharacterMovePathGenerator(List<SeekerPathfinding> seekerPathfindingList, Vector3 targetPos);
 
-    public enum SeekerType
-    {
-        NONE,
-
-        Seeker_1,
-        Seeker_2,
-        Seeker_3
-    }
-
     [Serializable]
     class SeekerDatas
     {
-        [Tooltip("SeekerType")]
-        public SeekerType seekerType;
+        [Tooltip("SeekerLabel")]
+        public string strSeekerLabel;
 
         [Tooltip("Ne kadar detaylı arama yapsın (node büyüklüğü)")]
         public float nodeRadius;
@@ -91,26 +82,50 @@ public class SeekerManager : Singleton<SeekerManager>
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    private SeekerDatas GetSeekerDatas(SeekerType seekerType)
+    private SeekerDatas GetSeekerDatas(int idx)
+    {
+        if (seekerDatasArray == null)
+        {
+            return new SeekerDatas();
+        }
+
+        int seekerDatasArrayLength = seekerDatasArray.Length;
+
+        if (idx > seekerDatasArrayLength)
+        {
+            return new SeekerDatas();
+        }
+
+        if (idx < 0)
+        {
+            return new SeekerDatas();
+        }
+
+        return seekerDatasArray[idx];
+    }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
+    public int GetSeekerLabelIdx(string strSeekerLabel)
     {
         int seekerDatasArrayLength = seekerDatasArray.Length;
 
         for (int i = 0; i < seekerDatasArrayLength; i++)
         {
-            if (seekerDatasArray[i].seekerType == seekerType)
+            if (seekerDatasArray[i].strSeekerLabel == strSeekerLabel)
             {
-                return seekerDatasArray[i];
+                return i;
             }
         }
 
-        return null;
+        return -1;
     }
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    public float GetNodeRadius(SeekerType seekerType)
+    public float GetNodeRadius(int seekderDataIdx)
     {
-        SeekerDatas seekerDatas = GetSeekerDatas(seekerType);
+        SeekerDatas seekerDatas = GetSeekerDatas(seekderDataIdx);
 
         if (seekerDatas == null)
         {
@@ -122,9 +137,9 @@ public class SeekerManager : Singleton<SeekerManager>
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    public GridDatas GetSeekerGridDatas(SeekerType seekerType)
+    public GridDatas GetSeekerGridDatas(int seekderDataIdx)
     {
-        SeekerDatas seekerDatas = GetSeekerDatas(seekerType);
+        SeekerDatas seekerDatas = GetSeekerDatas(seekderDataIdx);
 
         if (seekerDatas == null)
         {
@@ -141,9 +156,9 @@ public class SeekerManager : Singleton<SeekerManager>
 
     //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
-    public SeekerPathfindingDatas GetSeekerSeekerPathfindingDatas(SeekerType seekerType)
+    public SeekerPathfindingDatas GetSeekerSeekerPathfindingDatas(int seekderDataIdx)
     {
-        SeekerDatas seekerDatas = GetSeekerDatas(seekerType);
+        SeekerDatas seekerDatas = GetSeekerDatas(seekderDataIdx);
 
         if (seekerDatas == null)
         {
