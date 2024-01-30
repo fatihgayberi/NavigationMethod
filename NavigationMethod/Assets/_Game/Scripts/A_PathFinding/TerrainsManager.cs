@@ -10,14 +10,10 @@ public class TerrainsManager : Singleton<TerrainsManager>
 
     private Vector3 _rayOffset;
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     private void Start()
     {
         _rayOffset = Vector3.up * rayHeight / 2;
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public float GetTerrainSampleHeight(Vector3 pos)
     {
@@ -31,8 +27,6 @@ public class TerrainsManager : Singleton<TerrainsManager>
 
         return terrain.transform.position.y + terrain.SampleHeight(pos); ;
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private Terrain GetTerrain(Vector3 pos)
     {

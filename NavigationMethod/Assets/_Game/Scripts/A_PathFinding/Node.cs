@@ -11,16 +11,12 @@ public class Node
     public int hCost;
     public Node parent;
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     public Node(Vector3 _worldPos, int _seekerGridX, int _seekerGridY)
     {
         worldPosition = _worldPos;
         seekerGridX = _seekerGridX;
         seekerGridY = _seekerGridY;
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public int fCost
     {

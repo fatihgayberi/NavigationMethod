@@ -52,8 +52,6 @@ public class SeekerManager : Singleton<SeekerManager>
 
     [SerializeField] private SeekerDatas[] seekerDatasArray;
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     private void OnEnable()
     {
         SeekerInputMoveController.SeekerCharacterMovePathGenerator += OnSeekerCharacterMovePathGenerator;
@@ -62,8 +60,6 @@ public class SeekerManager : Singleton<SeekerManager>
     {
         SeekerInputMoveController.SeekerCharacterMovePathGenerator -= OnSeekerCharacterMovePathGenerator;
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private void OnSeekerCharacterMovePathGenerator(List<SeekerPathfinding> seekerPathfindingList, Vector3 targetPos)
     {
@@ -79,8 +75,6 @@ public class SeekerManager : Singleton<SeekerManager>
             seekerPathfindingList[i].FindPath(targetPos);
         }
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private SeekerDatas GetSeekerDatas(int idx)
     {
@@ -104,8 +98,6 @@ public class SeekerManager : Singleton<SeekerManager>
         return seekerDatasArray[idx];
     }
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     public int GetSeekerLabelIdx(string strSeekerLabel)
     {
         int seekerDatasArrayLength = seekerDatasArray.Length;
@@ -121,8 +113,6 @@ public class SeekerManager : Singleton<SeekerManager>
         return -1;
     }
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     public float GetNodeRadius(int seekderDataIdx)
     {
         SeekerDatas seekerDatas = GetSeekerDatas(seekderDataIdx);
@@ -134,8 +124,6 @@ public class SeekerManager : Singleton<SeekerManager>
 
         return seekerDatas.nodeRadius;
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public GridDatas GetSeekerGridDatas(int seekderDataIdx)
     {
@@ -153,8 +141,6 @@ public class SeekerManager : Singleton<SeekerManager>
 
         return seekerDatas.gridDatas;
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public SeekerPathfindingDatas GetSeekerSeekerPathfindingDatas(int seekderDataIdx)
     {

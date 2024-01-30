@@ -9,8 +9,6 @@ public class SeekerController : MonoBehaviour
     private SeekerPathfinding _seekerPathfinding;
     private SeekerGrid _seekerGrid;
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     private void Start()
     {
         int seekderIdx = SeekerManager.Instance.GetSeekerLabelIdx(strSeekerLabel);
@@ -19,15 +17,11 @@ public class SeekerController : MonoBehaviour
         SeekerPathfindingInitialize(seekderIdx);
     }
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     private void SeekerGridInitialize(int seekderIdx)
     {
         _seekerGrid = gameObject.AddComponent<SeekerGrid>();
         _seekerGrid.SetSeekerDataIdx(seekderIdx);
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private void SeekerPathfindingInitialize(int seekderIdx)
     {
@@ -35,8 +29,6 @@ public class SeekerController : MonoBehaviour
         _seekerPathfinding.SetSeekerGrid(_seekerGrid);
         _seekerPathfinding.SetSeekerDataIdx(seekderIdx);
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private void OnTriggerEnter(Collider other)
     {
@@ -65,8 +57,6 @@ public class SeekerController : MonoBehaviour
             _seekerPathfinding.SeekerDetecetNavObs();
         }
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private bool IsSeekerWalkDetectionNavObs(GameObject detectionObject)
     {

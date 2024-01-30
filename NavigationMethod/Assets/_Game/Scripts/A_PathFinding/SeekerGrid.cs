@@ -12,8 +12,6 @@ public class SeekerGrid : MonoBehaviour
 
     private int _seekderDataIdx;
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     private void OnEnable()
     {
         Wonnasmith.GOD_MODE_MANAGER.GizmosClearButtonClick += OnGizmosClearButtonClick;
@@ -23,8 +21,6 @@ public class SeekerGrid : MonoBehaviour
     {
         Wonnasmith.GOD_MODE_MANAGER.GizmosClearButtonClick -= OnGizmosClearButtonClick;
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private void OnGizmosClearButtonClick()
     {
@@ -36,14 +32,10 @@ public class SeekerGrid : MonoBehaviour
         pathTEST.Clear();
     }
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     public void SetSeekerDataIdx(int seekderDataIdx)
     {
         _seekderDataIdx = seekderDataIdx;
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public void SeekerGridInitialize(Vector3 startPos, Vector3 targetPos)
     {
@@ -79,8 +71,6 @@ public class SeekerGrid : MonoBehaviour
         CreateSeekerGrid();
     }
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     public void SeekerGridInitialize()
     {
         _nodeDiameter = SeekerManager.Instance.GetNodeRadius(_seekderDataIdx) * 2;
@@ -100,8 +90,6 @@ public class SeekerGrid : MonoBehaviour
         CreateSeekerGrid();
     }
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     void CreateSeekerGrid()
     {
         _seekerGridArray = new Node[_seekerGridSizeX, _seekerGridSizeZ];
@@ -118,8 +106,6 @@ public class SeekerGrid : MonoBehaviour
             }
         }
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public List<Node> GetNeighbours(Node node)
     {
@@ -145,8 +131,6 @@ public class SeekerGrid : MonoBehaviour
         return neighbours;
     }
 
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
-
     public Node NodeFromWorldPoint(Vector3 worldPosition)
     {
         float percentX = (worldPosition.x + _seekerGridWorldSize.x / 2) / _seekerGridWorldSize.x;
@@ -161,8 +145,6 @@ public class SeekerGrid : MonoBehaviour
 
         return _seekerGridArray[x, z];
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public void SeekerGridExpand()
     {
@@ -196,8 +178,6 @@ public class SeekerGrid : MonoBehaviour
 
         SeekerGridInitialize();
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private bool IsWalkableControl_TEST_FOR_GIZMOS(Vector3 worldPoint)
     {
@@ -237,8 +217,6 @@ public class SeekerGrid : MonoBehaviour
 
         return true;
     }
-
-    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public List<Node> pathTEST;
     public Color gizmosColor;
