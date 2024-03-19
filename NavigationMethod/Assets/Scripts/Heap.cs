@@ -1,113 +1,133 @@
-﻿using System;
-using UnityEditorInternal.Profiling.Memory.Experimental;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
+using System;
 
 namespace HHG.PathfindingSystem
 {
-    [Serializable]
-    public struct Heap<T> where T : struct, IHeapItem<T>
+    public class Heap<T> where T : IHeapItem<T>
     {
-        private T[] items;
-        private int currentItemCount;
+
+        T[] items;
+        int currentItemCount;
 
         public Heap(int maxHeapSize)
         {
             items = new T[maxHeapSize];
-            currentItemCount = 0;
         }
 
-        public void Add(ref T item)
+        public void Add(T item)
         {
             item.HeapIndex = currentItemCount;
             items[currentItemCount] = item;
-            SortUp(ref item);
+            SortUp(item);
             currentItemCount++;
         }
 
         public T RemoveFirst()
         {
             T firstItem = items[0];
-            currentItemCount -= 1;
-
+            currentItemCount--;
             items[0] = items[currentItemCount];
             items[0].HeapIndex = 0;
-
-            T refItem = items[0];
-
-            SortDown(ref refItem);
+            SortDown(items[0]);
             return firstItem;
         }
 
         public void UpdateItem(T item)
         {
-            SortUp(ref item);
+            SortUp(item);
         }
 
-        public int Count => currentItemCount;
+        public int Count
+        {
+            get
+            {
+                return currentItemCount;
+            }
+        }
 
         public bool Contains(T item)
         {
             return Equals(items[item.HeapIndex], item);
         }
 
-        private void SortDown(ref T item)
+        void SortDown(T item)
         {
             while (true)
             {
                 int childIndexLeft = item.HeapIndex * 2 + 1;
                 int childIndexRight = item.HeapIndex * 2 + 2;
+                int swapIndex = 0;
 
-                if (childIndexLeft >= currentItemCount) return;
-
-                int swapIndex = childIndexLeft;
-
-                if (childIndexRight < currentItemCount)
+                if (childIndexLeft < currentItemCount)
                 {
-                    if (items[childIndexLeft].CompareTo(items[childIndexRight]) < 0)
+                    swapIndex = childIndexLeft;
+
+                    if (childIndexRight < currentItemCount)
                     {
-                        swapIndex = childIndexRight;
+                        if (items[childIndexLeft].CompareTo(items[childIndexRight]) < 0)
+                        {
+                            swapIndex = childIndexRight;
+                        }
                     }
+
+                    if (item.CompareTo(items[swapIndex]) < 0)
+                    {
+                        Swap(item, items[swapIndex]);
+                    }
+                    else
+                    {
+                        return;
+                    }
+
+                }
+                else
+                {
+                    return;
                 }
 
-                if (item.CompareTo(items[swapIndex]) >= 0) return;
-
-                T swapItem = items[swapIndex];
-
-                Swap(ref item, ref swapItem);
             }
         }
 
-        private void SortUp(ref T item)
+        void SortUp(T item)
         {
             int parentIndex = (item.HeapIndex - 1) / 2;
 
             while (true)
             {
                 T parentItem = items[parentIndex];
-
-                if (item.CompareTo(parentItem) <= 0) break;
-
-                Swap(ref item, ref parentItem);
+                if (item.CompareTo(parentItem) > 0)
+                {
+                    Swap(item, parentItem);
+                }
+                else
+                {
+                    break;
+                }
 
                 parentIndex = (item.HeapIndex - 1) / 2;
             }
         }
 
-        private void Swap(ref T itemA, ref T itemB)
+        void Swap(T itemA, T itemB)
         {
-            T itemTempA = itemA;
-            T itemTempB = itemB;
-
-            items[itemA.HeapIndex] = itemTempB;
-            items[itemB.HeapIndex] = itemTempA;
-
-            items[itemTempA.HeapIndex].HeapIndex = itemTempB.HeapIndex;
-            items[itemTempB.HeapIndex].HeapIndex = itemTempA.HeapIndex;
+            items[itemA.HeapIndex] = itemB;
+            items[itemB.HeapIndex] = itemA;
+            int itemAIndex = itemA.HeapIndex;
+            itemA.HeapIndex = itemB.HeapIndex;
+            itemB.HeapIndex = itemAIndex;
         }
+
+
+
     }
 
     public interface IHeapItem<T> : IComparable<T>
     {
-        int HeapIndex { get; set; }
+        int HeapIndex
+        {
+            get;
+            set;
+        }
     }
 }

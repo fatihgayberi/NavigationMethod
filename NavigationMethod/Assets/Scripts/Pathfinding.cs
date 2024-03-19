@@ -19,22 +19,24 @@ namespace HHG.PathfindingSystem
             requestManager = GetComponent<PathRequestManager>();
             grid = GetComponent<PathfindGrid>();
 
-            StartCoroutine(FindPath(Vector3.zero, Vector3.zero));
+            // for (int i = 0; i < 200; i++)
+            // {
+            //     FindPath(Vector3.zero, Vector3.zero);
+            // }
         }
 
         public void StartFindPath(Vector3 startPos, Vector3 targetPos)
         {
-            StartCoroutine(FindPath(startPos, targetPos, true));
+            FindPath(startPos, targetPos, true);
         }
 
-        private IEnumerator FindPath(Vector3 startPos, Vector3 targetPos, bool isUnit = false)
+        private void FindPath(Vector3 startPos, Vector3 targetPos, bool isUnit = false)
         {
-
             Vector3[] waypoints = new Vector3[0];
             bool pathSuccess = false;
 
-            Node startNode = grid.grid[0, 0];//.NodeFromWorldPoint(startPos);
-            Node targetNode = grid.grid[0, 2];//.NodeFromWorldPoint(targetPos);
+            Node startNode = grid.grid[UnityEngine.Random.Range(0, 197), UnityEngine.Random.Range(0, 197)];//.NodeFromWorldPoint(startPos);
+            Node targetNode = grid.grid[UnityEngine.Random.Range(0, 197), UnityEngine.Random.Range(0, 197)];//.NodeFromWorldPoint(targetPos);
 
             Debug.Log("startNode:::" + startNode.worldPosition);
             Debug.Log("targetNode:::" + targetNode.worldPosition);
@@ -45,7 +47,7 @@ namespace HHG.PathfindingSystem
 
                 HashSet<Node> closedSet = new HashSet<Node>();
 
-                openSet.Add(ref startNode);
+                openSet.Add(startNode);
 
                 while (openSet.Count > 0)
                 {
@@ -69,47 +71,44 @@ namespace HHG.PathfindingSystem
                         Node neighbour = localNeighbours[i];
 
                         pathEditorData.NeighbourForeachCount++;
-                        if (/*!neighbour.walkable ||*/ closedSet.Contains(neighbour))
+                        if (!neighbour.walkable || closedSet.Contains(neighbour))
                         {
                             continue;
                         }
 
-                        int newMovementCostToNeighbour = currentNode.GCost + GetDistance(currentNode, neighbour);
+                        int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
 
-                        if (newMovementCostToNeighbour < neighbour.GCost || !openSet.Contains(neighbour))
+                        if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
                         {
-                            neighbour.SetGCost(newMovementCostToNeighbour);
-                            neighbour.SetHCost(GetDistance(neighbour, targetNode));
-                            neighbour.SetParentX(currentNode.gridX);
-                            neighbour.SetParentY(currentNode.gridY);
+                            neighbour.gCost = newMovementCostToNeighbour;
+                            neighbour.hCost = GetDistance(neighbour, targetNode);
+                            neighbour.parent = currentNode;
 
                             if (!openSet.Contains(neighbour))
                             {
-                                openSet.Add(ref neighbour);
+                                openSet.Add(neighbour);
                             }
 
                             localNeighbours[i] = neighbour;
                         }
                     }
 
-                    GridNodeUpdate(ref localNeighbours);
+                    GridNodeUpdate(localNeighbours);
                 }
             }
 
-            yield return null;
-
             if (pathSuccess)
             {
-                //waypoints = RetracePath(startNode, targetNode);
+                waypoints = RetracePath(startNode, targetNode);
             }
 
             if (isUnit)
             {
-                //requestManager.FinishedProcessingPath(waypoints, pathSuccess);
+                requestManager.FinishedProcessingPath(waypoints, pathSuccess);
             }
         }
 
-        private void GridNodeUpdate(ref List<Node> nodes)
+        private void GridNodeUpdate(List<Node> nodes)
         {
             foreach (var item in nodes)
             {
@@ -117,17 +116,16 @@ namespace HHG.PathfindingSystem
             }
         }
 
-        private Vector3[] RetracePath(Node startNode, Node endNode)
+        Vector3[] RetracePath(Node startNode, Node endNode)
         {
             List<Node> path = new List<Node>();
             Node currentNode = endNode;
 
-            //while (!(currentNode.gridX == endNode.gridX && currentNode.gridY == endNode.gridY))
-            //{
-            //    path.Add(currentNode);
-            //    //currentNode.SetParentX = currentNode.parent;
-            //    pathEditorData.RetracePathWhileCount++;
-            //}
+            while (currentNode != startNode)
+            {
+                path.Add(currentNode);
+                currentNode = currentNode.parent;
+            }
 
             Vector3[] waypoints = SimplifyPath(path);
             Array.Reverse(waypoints);

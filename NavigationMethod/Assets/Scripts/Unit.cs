@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
 
 namespace HHG.PathfindingSystem
 {
@@ -15,6 +16,11 @@ namespace HHG.PathfindingSystem
 
         [ContextMenu("UnitPathRequest")]
         private void UnitPathRequest()
+        {
+            PathRequestManager.RequestPath(transform.position, _target.position, OnPathFound);
+        }
+
+        private void Start()
         {
             PathRequestManager.RequestPath(transform.position, _target.position, OnPathFound);
         }
@@ -38,6 +44,8 @@ namespace HHG.PathfindingSystem
         /// <summary> Player target a dogru hareket ediyor </summary>
         private IEnumerator FollowPath()
         {
+            if (_path.Length <= 0) yield break;
+
             Vector3 currentWaypoint = _path[0];
 
             while (true)
@@ -54,8 +62,15 @@ namespace HHG.PathfindingSystem
 
                 transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, _speed * Time.deltaTime);
 
+                if (transform.position == _path[_path.Length - 1])
+                {
+                    break;
+                }
+
                 yield return null;
             }
+
+            UnitPathRequest();
         }
 
 #if UNITY_EDITOR
@@ -66,15 +81,15 @@ namespace HHG.PathfindingSystem
             for (int i = _targetIndex; i < _path.Length; i++)
             {
                 Gizmos.color = Color.black;
-                Gizmos.DrawCube(_path[i], Vector3.one);
+                Gizmos.DrawCube(_path[i], Vector3.one * 0.02f);
 
                 if (i == _targetIndex)
                 {
-                    Debug.DrawLine(transform.position, _path[i], Color.black, 5000);
+                    Debug.DrawLine(transform.position, _path[i], Color.black);
                 }
                 else
                 {
-                    Debug.DrawLine(_path[i - 1], _path[i], Color.black, 5000);
+                    Debug.DrawLine(_path[i - 1], _path[i], Color.black);
                 }
             }
         }

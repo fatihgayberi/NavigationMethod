@@ -33,7 +33,7 @@ namespace HHG.PathfindingSystem
 
         public int GridGeneratorForeachCount;
 
-        private void CreateGrid()
+        void CreateGrid()
         {
             grid = new Node[gridSizeX, gridSizeY];
             Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
@@ -43,17 +43,8 @@ namespace HHG.PathfindingSystem
                 for (int y = 0; y < gridSizeY; y++)
                 {
                     Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
-                    bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
-
-                    if (!walkable)
-                    {
-                        worldPoint += Vector3.up * 5f;
-                    }
-                    GridGeneratorForeachCount++;
-
-                    grid[x, y] = new Node(true, worldPoint, x, y);
-
-                    Debug.Log("worldPoint:::" + worldPoint);
+                    bool walkable = !Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask);
+                    grid[x, y] = new Node(walkable, worldPoint, x, y);
                 }
             }
         }
@@ -103,7 +94,7 @@ namespace HHG.PathfindingSystem
                 foreach (Node n in grid)
                 {
                     Gizmos.color = (n.walkable) ? Color.white : Color.red;
-                    Gizmos.DrawCube(n.worldPosition, new Vector3(nodeDiameter - .1f, 0.01f, nodeDiameter - .1f));
+                    Gizmos.DrawCube(n.worldPosition - Vector3.up * 0.5f, new Vector3(nodeDiameter - .1f, 0.01f, nodeDiameter - .1f));
                 }
             }
         }
