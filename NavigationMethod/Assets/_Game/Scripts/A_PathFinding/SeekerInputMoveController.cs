@@ -8,6 +8,8 @@ public class SeekerInputMoveController : MonoBehaviour
 
     private List<SeekerPathfinding> _selectSeekerPathfindingList;
     
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     private void Update()
     {
         // if (!GameManager.IsPause())
@@ -19,6 +21,8 @@ public class SeekerInputMoveController : MonoBehaviour
         InputMoveSelect();
     }
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     private void InputSelectedSeekerBreaker()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -29,6 +33,8 @@ public class SeekerInputMoveController : MonoBehaviour
             }
         }
     }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private void InputMoveSelect()
     {

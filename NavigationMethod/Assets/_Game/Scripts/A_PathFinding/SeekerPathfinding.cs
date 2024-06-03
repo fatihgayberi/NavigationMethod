@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Dreamteck.Splines;
 
 public class SeekerPathfinding : MonoBehaviour
 {
@@ -10,33 +11,39 @@ public class SeekerPathfinding : MonoBehaviour
     private WaitForSeconds _newRotaCalculateWaitTime;
     private Vector3 _targetPos;
 
-    // private SplineFollower _splineFollower;
-    // private Spline _spline = new Spline(Spline.Type.CatmullRom);
+    private SplineFollower _splineFollower;
+    private Spline _spline = new Spline(Spline.Type.CatmullRom);
 
     private int _seekderDataIdx;
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     public void SetSeekerGrid(SeekerGrid seekerGrid)
     {
         _seekerGrid = seekerGrid;
     }
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     public void SetSeekerDataIdx(int seekderDataIdx)
     {
         _seekderDataIdx = seekderDataIdx;
     }
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     public void FindPath(Vector3 targetPos)
     {
-        // _splineFollower = gameObject.GetComponent<SplineFollower>();
+        _splineFollower = gameObject.GetComponent<SplineFollower>();
 
-        // if (_splineFollower == null)
-        // {
+        if (_splineFollower == null)
+        {
 
-        //     if (_splineFollower == null)
-        //     {
-        //         return;
-        //     }
-        // }
+            if (_splineFollower == null)
+            {
+                return;
+            }
+        }
 
         _targetPos = targetPos;
 
@@ -109,25 +116,27 @@ public class SeekerPathfinding : MonoBehaviour
         }
     }
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     public void SeekerDetecetNavObs()
     {
-        //SplineFollower splineFollower = gameObject.GetComponent<SplineFollower>();
+        SplineFollower splineFollower = gameObject.GetComponent<SplineFollower>();
 
-        //splineFollower.follow = false;
+        splineFollower.follow = false;
 
         float dist = Vector3.Distance(_targetPos, transform.position);
 
         if (dist <= SeekerManager.Instance.GetSeekerSeekerPathfindingDatas(_seekderDataIdx).distTolerance)
         {
-            Debug.Log("zaten çok yakindasin ilerlemene gerek yok");
+            Debug.Log("DUR YOLCU 07 zaten çok yakındasın ilerlemene gerek yok");
             return;
         }
 
-        Debug.Log("Yeni rota hesaplaniyor");
+        Debug.Log("Yeni rota hesaplanıyor");
 
         if (SeekerManager.Instance.GetSeekerSeekerPathfindingDatas(_seekderDataIdx).newRotaWaitTime == 0)
         {
-            Debug.Log("direkt Yeni rota hesaplaniyor");
+            Debug.Log("direkt Yeni rota hesaplanıyor");
             FindPath(_targetPos);
             return;
         }
@@ -139,6 +148,8 @@ public class SeekerPathfinding : MonoBehaviour
 
         _newRotaCoroutine = StartCoroutine(NewRotaGeneratorIEnumerator());
     }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private IEnumerator NewRotaGeneratorIEnumerator()
     {
@@ -152,6 +163,8 @@ public class SeekerPathfinding : MonoBehaviour
 
         FindPath(_targetPos);
     }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private bool IsWalkableControl(Vector3 worldPoint)
     {
@@ -182,6 +195,8 @@ public class SeekerPathfinding : MonoBehaviour
         return true;
     }
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     private bool IsVerySlopeControl(Node neighbour, Node node)
     {
         float slope = SlopeCalculator(neighbour, node);
@@ -193,6 +208,8 @@ public class SeekerPathfinding : MonoBehaviour
 
         return false;
     }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private float SlopeCalculator(Node neighbour, Node node)
     {
@@ -217,6 +234,8 @@ public class SeekerPathfinding : MonoBehaviour
         return Wonnasmith.FloatExtensionMethods.FloatRemap(slope, 0, 1, 0, 100);
     }
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     private void RetracePath(Node startNode, Node endNode)
     {
         List<Node> path = new List<Node>();
@@ -237,51 +256,53 @@ public class SeekerPathfinding : MonoBehaviour
         Debug.Log("<color=green>:::YOL BULUNDU YÜRÜ YA KULUM:::</color>");
     }
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     public Quaternion prevTargetRotatetion;
     public Vector3 prevTargetMotionAngle;
 
     private void SplineEdit(List<Node> path)
     {
-        // if (_splineFollower == null)
-        // {
-        //     return;
-        // }
+        if (_splineFollower == null)
+        {
+            return;
+        }
 
-        // prevTargetRotatetion = transform.rotation;
-        // prevTargetMotionAngle = _splineFollower.motion.rotationOffset;
+        prevTargetRotatetion = transform.rotation;
+        prevTargetMotionAngle = _splineFollower.motion.rotationOffset;
 
-        // Vector2 currentMotionOffset = _splineFollower.motion.offset;
+        Vector2 currentMotionOffset = _splineFollower.motion.offset;
 
-        // _splineFollower.follow = false;
+        _splineFollower.follow = false;
 
-        // _spline.points = new SplinePoint[path.Count + 1];
-        // _spline.points[0] = new SplinePoint(transform.position);
+        _spline.points = new SplinePoint[path.Count + 1];
+        _spline.points[0] = new SplinePoint(transform.position);
 
-        // for (int i = 1; i < path.Count + 1; i++)
-        // {
-        //     _spline.points[i] = new SplinePoint(path[i - 1].worldPosition);
-        // }
+        for (int i = 1; i < path.Count + 1; i++)
+        {
+            _spline.points[i] = new SplinePoint(path[i - 1].worldPosition);
+        }
 
-        // _splineFollower.spline.SetPoints(_spline.points);
-        // Vector3 targetTangent = _splineFollower.spline.GetPointNormal(0);
-        // Vector3 targetTangent2 = _splineFollower.spline.GetPointTangent2(0);
+        _splineFollower.spline.SetPoints(_spline.points);
+        Vector3 targetTangent = _splineFollower.spline.GetPointNormal(0);
+        Vector3 targetTangent2 = _splineFollower.spline.GetPointTangent2(0);
 
-        // _splineFollower.motion.offset = currentMotionOffset;
+        _splineFollower.motion.offset = currentMotionOffset;
 
-        // SplineSample asdf = null;
+        SplineSample asdf = null;
 
-        // // _splineFollower.Project(transform.position, (SplineSample)_spline);
-        // _splineFollower.SetPercent(0);
+        // _splineFollower.Project(transform.position, (SplineSample)_spline);
+        _splineFollower.SetPercent(0);
 
-        // _splineFollower.spline.RebuildImmediate();
-        // _splineFollower.RebuildImmediate();
+        _splineFollower.spline.RebuildImmediate();
+        _splineFollower.RebuildImmediate();
 
-        // _splineFollower.follow = true;
+        _splineFollower.follow = true;
 
-        // // Debug.Log("eulerAnglesThis::: " + transform.rotation.eulerAngles);
-        // // Debug.Log("targetTangent::: " + targetTangent);
-        // // Debug.Log("targetTangent2::: " + targetTangent2);
-        // // _splineFollower.motion.rotationOffset = transform.rotation.eulerAngles * -1;
+        // Debug.Log("eulerAnglesThis::: " + transform.rotation.eulerAngles);
+        // Debug.Log("targetTangent::: " + targetTangent);
+        // Debug.Log("targetTangent2::: " + targetTangent2);
+        // _splineFollower.motion.rotationOffset = transform.rotation.eulerAngles * -1;
 
 
 
@@ -308,6 +329,8 @@ public class SeekerPathfinding : MonoBehaviour
         // _splineFollower.RebuildImmediate();
     }
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     public float rotateSpeed = 250;
     public bool isRotateTest = true;
 
@@ -319,18 +342,20 @@ public class SeekerPathfinding : MonoBehaviour
             return;
         }
 
-        //if (_splineFollower == null)
-        //{
-        //    return;
-        //}
+        if (_splineFollower == null)
+        {
+            return;
+        }
 
-        //if (_splineFollower.follow)
-        //{
-        //    _splineFollower.motion.rotationOffset = Quaternion.RotateTowards(Quaternion.Euler(_splineFollower.motion.rotationOffset), Quaternion.Euler(Vector3.zero), rotateSpeed * Time.deltaTime).eulerAngles;
-        //}
+        if (_splineFollower.follow)
+        {
+            _splineFollower.motion.rotationOffset = Quaternion.RotateTowards(Quaternion.Euler(_splineFollower.motion.rotationOffset), Quaternion.Euler(Vector3.zero), rotateSpeed * Time.deltaTime).eulerAngles;
+        }
     }
 
 
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private int GetDistance(Node nodeA, Node nodeB)
     {

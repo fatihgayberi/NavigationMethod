@@ -23,6 +23,8 @@ public class LayerManager : Singleton<LayerManager>
 
     [SerializeField] private LayerDatas[] layerDatasArray;
 
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+
     public bool IsLayerEquals(int objectLayer, LayerType layerType)
     {
         LayerDatas layerDatas = GetLayerDatas(layerType);
@@ -36,6 +38,8 @@ public class LayerManager : Singleton<LayerManager>
 
         return objectLayer.Equals(layerNum);
     }
+
+    //[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
 
     private LayerDatas GetLayerDatas(LayerType layerType)
     {
